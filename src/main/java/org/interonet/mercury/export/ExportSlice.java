@@ -1,10 +1,14 @@
-package org.interonet.mercury.domain.core;
+package org.interonet.mercury.export;
+
+import org.interonet.mercury.domain.core.Slice;
+import org.interonet.mercury.domain.core.Switch;
+import org.interonet.mercury.domain.core.VirtualMachine;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserSlice {
+public class ExportSlice {
     private String id;
     private Slice.SliceStatus status = Slice.SliceStatus.NEW;
     private Integer switchesNum;
@@ -22,7 +26,10 @@ public class UserSlice {
     private Map<String, Integer> userVM2domVM;
     private Slice.SliceException exception = Slice.SliceException.NONE;
 
-    public UserSlice(Slice slice) {
+    public ExportSlice() {
+    }
+
+    public ExportSlice(Slice slice) {
         this.id = slice.getId();
         this.status = slice.getStatus();
         this.switchesNum = slice.getSwitchesNum();
@@ -47,7 +54,7 @@ public class UserSlice {
         this.exception = slice.getException();
     }
 
-    public UserSlice(String id) {
+    public ExportSlice(String id) {
     }
 
     public String getId() {

@@ -1,0 +1,42 @@
+
+
+mercury:
+  token:
+    expireMins: 20
+  venus:
+    url: http://10.0.0.1:8081/
+    timeoutMillis: 300000
+
+spring:
+  logging:
+    level:
+      root: DEBUG
+      org.springframework.core : FATAL
+      org.springframework.beans: FATAL
+      org.springframework.context: FATAL
+      org.springframework.transaction: ERROR
+      org.springframework.test: DEBUG
+      org.springframework.web: DEBUG
+      org.hibernate: ERROR
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+
+  redis:
+    user:
+      database: 0
+      host: localhost
+      port: 6379
+    token:
+      database: 1
+      host: localhost
+      port: 6379
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+debug: true

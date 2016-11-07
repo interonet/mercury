@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class Token {
+    String username;
     String token;
     ZonedDateTime issueAt;
     ZonedDateTime expireAt;
@@ -12,10 +13,19 @@ public class Token {
         token = UUID.randomUUID().toString();
     }
 
-    public Token(String token, ZonedDateTime issueAt, ZonedDateTime expireAt) {
+    public Token(String username, String token, ZonedDateTime issueAt, ZonedDateTime expireAt) {
+        this.username = username;
         this.token = token;
         this.issueAt = issueAt;
         this.expireAt = expireAt;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getToken() {

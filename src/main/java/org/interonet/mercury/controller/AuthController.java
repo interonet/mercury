@@ -1,4 +1,4 @@
-package org.interonet.mercury.web;
+package org.interonet.mercury.controller;
 
 import org.interonet.mercury.domain.auth.Credential;
 import org.interonet.mercury.domain.auth.Token;

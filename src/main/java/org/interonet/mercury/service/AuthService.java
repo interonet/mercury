@@ -7,7 +7,6 @@ import org.interonet.mercury.domain.auth.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +28,19 @@ public class AuthService {
     private RedisTemplate<String, Token> userRedisTemplate;
 
     @Autowired
-    @Qualifier("tokenStringRedisTemplate")
-    private StringRedisTemplate tokenRedisTemplate;
+    @Qualifier("tokenRedisTemplate")
+    private RedisTemplate<String, Token> tokenRedisTemplate;
 
     public boolean isTokenExisted(String token) {
         return tokenRedisTemplate.opsForValue().get(token) != null;
     }
 
-    public User getUserByToken(String token) {
-        String username = tokenRedisTemplate.opsForValue().get(token);
-        User user = userMapper.selectByUsername(username);
+    public User getUserByToken(String token) throws Exception {
+        Token userToken = tokenRedisTemplate.opsForValue().get(token);
+        if (userToken == null) {
+            throw new Exception("Expire");
+        }
+        User user = userMapper.selectByUsername(userToken.getUsername());
         return user;
     }
 
@@ -48,7 +50,7 @@ public class AuthService {
         String password = credential.getPassword();
         User user = userMapper.selectByUsernamePassword(username, password);
         if (user == null) {
-            Token noAvailableToken = new Token("N/A", ZonedDateTime.now(), ZonedDateTime.now());
+            Token noAvailableToken = new Token(username, "", ZonedDateTime.now(), ZonedDateTime.now());
             return noAvailableToken;
         }
 
@@ -59,6 +61,7 @@ public class AuthService {
         }
 
         Token token = new Token();
+        token.setUsername(username);
         token.setIssueAt(ZonedDateTime.now());
         Long tokenExpirePeriod = configService.getTokenExpirePeriod();
         token.setExpireAt(ZonedDateTime.now().plusMinutes(tokenExpirePeriod));
@@ -66,7 +69,7 @@ public class AuthService {
         userRedisTemplate.opsForValue().set(username, token);
         userRedisTemplate.expire(username, tokenExpirePeriod, TimeUnit.MINUTES);
 
-        tokenRedisTemplate.opsForValue().set(token.getToken(), username);
+        tokenRedisTemplate.opsForValue().set(token.getToken(), token);
         tokenRedisTemplate.expire(token.getToken(), tokenExpirePeriod, TimeUnit.MINUTES);
 
         return token;

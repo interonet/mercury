@@ -1,5 +1,7 @@
 package org.interonet.mercury.domain.core;
 
+import org.interonet.mercury.export.ExportSubmitSlice;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,17 @@ public class Slice {
     private SliceException exception = SliceException.NONE;
 
     public Slice() {
+    }
+
+    public Slice(ExportSubmitSlice exportSubmitSlice) {
+        this.switchesNum = exportSubmitSlice.getSwitchesNum();
+        this.vmsNum = exportSubmitSlice.getVmsNum();
+        this.beginTime = exportSubmitSlice.getBeginTime();
+        this.endTime = exportSubmitSlice.getEndTime();
+        this.topology = exportSubmitSlice.getTopology();
+        this.controllerConf = exportSubmitSlice.getControllerConf();
+        this.switchConf = exportSubmitSlice.getSwitchConf();
+        this.customSwitchConf = exportSubmitSlice.getCustomSwitchConf();
     }
 
     public Integer getSwitchesNum() {

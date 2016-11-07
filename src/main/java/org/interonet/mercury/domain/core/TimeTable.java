@@ -1,30 +1,41 @@
 package org.interonet.mercury.domain.core;
 
 import org.interonet.mercury.domain.core.datetime.SliceDuration;
+import org.interonet.mercury.service.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.PostConstruct;
 
 @Component
 public class TimeTable {
     private static Logger logger = LoggerFactory.getLogger(TimeTable.class);
 
-    @Value("${totalSwitchesNumber}")
-    private int totalSwitchesNumber;
+    @Autowired
+    ConfigService configService;
 
-    @Value("${totalVmsNumber}")
-    private int totalVmsNumber;
+    private Integer totalSwitchesNumber;
+    private Integer totalVmsNumber;
 
     private Map<Integer, TreeSet<SliceDuration>> switchTimeTable;
     private Map<Integer, TreeSet<SliceDuration>> vmTimeTable;
 
     @PostConstruct
     public void init() {
+        totalSwitchesNumber = configService.getSwitchNumber();
+        totalVmsNumber = configService.getVmNumber();
+
         switchTimeTable = new HashMap<>();
         for (int i = 1; i <= totalSwitchesNumber; i++) {
             TreeSet<SliceDuration> swTimeLine = new TreeSet<>();
@@ -36,7 +47,6 @@ public class TimeTable {
             vmTimeTable.put(i, vmTimeLine);
         }
     }
-
 
     /*
        resourceRequest={"switch":10,"vm":10}

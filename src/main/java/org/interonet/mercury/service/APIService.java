@@ -2,8 +2,9 @@ package org.interonet.mercury.service;
 
 import org.interonet.mercury.domain.auth.User;
 import org.interonet.mercury.domain.core.Slice;
-import org.interonet.mercury.domain.core.UserSlice;
 import org.interonet.mercury.domain.core.datetime.SliceDuration;
+import org.interonet.mercury.export.ExportSlice;
+import org.interonet.mercury.export.ExportSubmitSlice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,19 @@ public class APIService {
         this.coreService = coreService;
     }
 
-    public UserSlice submitSlice(String authToken, Slice slice) throws Exception {
+    public ExportSlice submitSlice(String authToken, ExportSubmitSlice exportSubmitSlice) throws Exception {
         if (!authService.isTokenExisted(authToken)) {
             logger.info("authentication failed");
-            throw new Exception("authToken = [" + authToken + "], sliceStr = [" + slice + "]");
+            throw new Exception("authToken = [" + authToken + "], sliceStr = [" + exportSubmitSlice + "]");
         }
+        Slice slice = new Slice(exportSubmitSlice);
         slice.setUsername(authService.getUserByToken(authToken).getUsername());
         slice.setStatus(Slice.SliceStatus.NEW);
         Slice submitSlice = coreService.submitSlice(slice);
-        return new UserSlice(submitSlice);
+        return new ExportSlice(submitSlice);
     }
 
-    public List<UserSlice> getUserSlicePool(String token) throws Exception {
+    public List<ExportSlice> getUserSlicePool(String token) throws Exception {
         if (token == null) return null;
         if (!authService.isTokenExisted(token)) {
             logger.info("authentication failed");
@@ -50,14 +52,14 @@ public class APIService {
         List<Slice> slicePool = getUserSlicePool(user);
         if (slicePool == null) return null;
 
-        List<UserSlice> userSlicePool = new ArrayList<>(slicePool.size());
+        List<ExportSlice> exportSlicePool = new ArrayList<>(slicePool.size());
         for (Slice slice : slicePool) {
-            userSlicePool.add(new UserSlice(slice));
+            exportSlicePool.add(new ExportSlice(slice));
         }
-        return userSlicePool;
+        return exportSlicePool;
     }
 
-    public UserSlice getSlice(String token, String sliceId) throws Exception {
+    public ExportSlice getSlice(String token, String sliceId) throws Exception {
         logger.debug("token = [" + token + "], sliceId = [" + sliceId + "]");
         if (token == null) return null;
         if (!authService.isTokenExisted(token)) {
@@ -69,8 +71,8 @@ public class APIService {
             User user = authService.getUserByToken(token);
             Slice slice = coreService.getSlice(user, sliceId);
             if (slice == null) return null;
-            UserSlice userSlice = new UserSlice(slice);
-            return userSlice;
+            ExportSlice exportSlice = new ExportSlice(slice);
+            return exportSlice;
         } catch (Exception e) {
             logger.error("getSlice", e);
             return null;
@@ -104,13 +106,13 @@ public class APIService {
         }
     }
 
-    public UserSlice tryToTerminateSlice(String token, String sliceId) throws Exception {
+    public ExportSlice tryToTerminateSlice(String token, String sliceId) throws Exception {
         if (!authService.isTokenExisted(token)) {
             logger.info("authentication failed");
             throw new Exception("authToken = [" + token + "], sliceId = [" + sliceId + "]");
         }
         Slice deletedSlice = coreService.tryToTerminateSlice(sliceId);
-        return new UserSlice(deletedSlice);
+        return new ExportSlice(deletedSlice);
     }
 }
 

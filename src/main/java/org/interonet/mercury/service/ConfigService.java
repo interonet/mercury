@@ -1,112 +1,72 @@
 package org.interonet.mercury.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.interonet.mercury.config.MercuryTokenYamlConfig;
 import org.interonet.mercury.domain.core.Switch;
+import org.interonet.mercury.domain.core.SwitchMapper;
 import org.interonet.mercury.domain.core.VirtualMachine;
+import org.interonet.mercury.domain.core.VmMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ConfigService {
-    private Logger logger = LoggerFactory.getLogger(ConfigService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
-    private Map<String, String> globalConfiguration = new HashMap<>();
-    private Map<Integer, VirtualMachine> vmDB = new HashMap<>();
-
-    private Map<Integer, Switch> switchDB = new HashMap<>();
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    public ConfigService() {
-//        if (System.getenv().get("INTERONET_HOME") == null) {
-//            System.out.println("INTERONET_HOME Environment Variable Check Error.");
-//            System.exit(1);
-//        }
-//        initGlobalConf();
-//        initSwitchDB();
-//        initVMDB();
-    }
-
-    private void initGlobalConf() {
-//        logger.info("reading conf file from " + System.getenv().get("INTERONET_HOME") + "/mercury/conf/conf.json");
-//        File confFile = new File(System.getenv().get("INTERONET_HOME") + "/mercury/conf/conf.json");
-//        try {
-//            Map<String, String> map = objectMapper.readValue(confFile, Map.class);
-//            for (Map.Entry<String, String> entry : map.entrySet()) {
-//                globalConfiguration.put(entry.getKey(), entry.getValue());
-//            }
-//        } catch (Exception e) {
-//            logger.error("initSwitchDB Error", e);
-//        }
-    }
-
-    private void initSwitchDB() {
-//        logger.info("reading swDB file from " + globalConfiguration.get("switchDB"));
-//        File switchDBFile = new File(globalConfiguration.get("switchDB"));
-//        try {
-//            Map<String, Map<String, String>> switches = objectMapper.readValue(switchDBFile, Map.class);
-//            for (Map.Entry<String, Map<String, String>> entry : switches.entrySet()) {
-//                Integer id = Integer.parseInt(entry.getKey());
-//                Map<String, String> s = entry.getValue();
-//                String name = s.get("name");
-//                String url = s.get("url");
-//                switchDB.put(id, new Switch(id, name, url));
-//            }
-//        } catch (Exception e) {
-//            logger.error("initSwitchDB Error", e);
-//        }
-    }
-
-    private void initVMDB() {
-//        logger.info("reading vmDB file from " + globalConfiguration.get("vmDB"));
-//        File vmDBFile = new File(globalConfiguration.get("vmDB"));
-//
-//        try {
-//            Map<String, Map<String, String>> vms = objectMapper.readValue(vmDBFile, Map.class);
-//            for (Map.Entry<String, Map<String, String>> entry : vms.entrySet()) {
-//                Integer id = Integer.parseInt(entry.getKey());
-//                Map<String, String> s = entry.getValue();
-//                String name = s.get("name");
-//                String url = s.get("url");
-//                vmDB.put(id, new VirtualMachine(id, name, url));
-//            }
-//        } catch (Exception e) {
-//            logger.error("initSwitchDB Error", e);
-//        }
-    }
-
-    public String getConf(String key) {
-        return globalConfiguration.get(key);
-    }
+    @Autowired
+    MercuryTokenYamlConfig mercuryTokenYamlConfig;
+    @Autowired
+    private VmMapper vmMapper;
+    @Autowired
+    private SwitchMapper switchMapper;
 
     public List<Switch> getSwitchList(List<Integer> idList) {
-        //TODO
-        return null;
+        StringBuilder idListStr = new StringBuilder();
+        for (int id : idList) {
+            idListStr.append(id).append(",");
+        }
+
+        List<Switch> ret = switchMapper.selectByIdList(idListStr.toString());
+        if (ret == null) return new ArrayList<>();
+        return ret;
     }
 
     public List<VirtualMachine> getVMList(List<Integer> idList) {
-        //TODO
-        return null;
+        StringBuilder idListStr = new StringBuilder();
+        for (int id : idList) {
+            idListStr.append(id).append(",");
+        }
+
+        List<VirtualMachine> ret = vmMapper.selectByIdList(idListStr.toString());
+        if (ret == null) return new ArrayList<>();
+        return ret;
     }
 
-    public Switch getSwitchById(Integer domSwitchId) throws Exception {
-//        if (domSwitchId == null) return null;
-//        return switchDB.get(domSwitchId);
-        return null;
+    public Switch getSwitchById(Integer switchId) throws Exception {
+        return switchMapper.selectById(switchId);
     }
 
-    public VirtualMachine getVMById(Integer domVMId) throws Exception {
-//        if (domVMId == null) return null;
-//        return vmDB.get(domVMId);
-        return null;
+    public VirtualMachine getVMById(Integer vmId) throws Exception {
+        return vmMapper.selectById(vmId);
     }
 
     public Long getTokenExpirePeriod() {
-        //Minus
-        return (long) 20;
+        return mercuryTokenYamlConfig.getExpireMins();
+    }
+
+    public Integer getSwitchNumber() {
+        Integer switchNumber = switchMapper.countAllSwitch();
+        if (switchNumber == null) return 0;
+        return switchNumber;
+    }
+
+    public Integer getVmNumber() {
+        Integer vmNumber = vmMapper.countAllVm();
+        if (vmNumber == null) return 0;
+        return vmNumber;
     }
 }

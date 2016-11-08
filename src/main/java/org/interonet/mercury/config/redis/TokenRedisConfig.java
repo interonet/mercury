@@ -29,6 +29,9 @@ public class TokenRedisConfig {
     @Value("${spring.redis.token.database}")
     private int database;
 
+    @Value("${spring.redis.token.password}")
+    private String password;
+
     @Primary
     @Bean(name = "tokenRedisConnectionFactory")
     public RedisConnectionFactory tokenRedisConnectionFactory() {
@@ -36,6 +39,7 @@ public class TokenRedisConfig {
         redisConnectionFactory.setHostName(host);
         redisConnectionFactory.setPort(port);
         redisConnectionFactory.setDatabase(database);
+        redisConnectionFactory.setPassword(password);
         return redisConnectionFactory;
     }
 

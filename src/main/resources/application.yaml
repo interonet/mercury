@@ -27,12 +27,14 @@ spring:
   redis:
     user:
       database: 0
-      host: localhost
-      port: 6379
+      host: ants.xjtu.edu.cn
+      port: 26379
+      password: siW-!8#X
     token:
       database: 1
-      host: localhost
-      port: 6379
+      host: ants.xjtu.edu.cn
+      port: 26379
+      password: siW-!8#X
 
   jackson:
     serialization:

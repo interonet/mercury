@@ -19,8 +19,8 @@ spring:
 
 
   datasource:
-    url: jdbc:mysql://5821aa6036b47.gz.cdb.myqcloud.com:8129/test
-    username: root
+    url: jdbc:mysql://ants.xjtu.edu.cn:23306/test
+    username: test
     password: siW-!8#X
     driver-class-name: com.mysql.jdbc.Driver
 

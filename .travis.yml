@@ -4,3 +4,6 @@ jdk:
 
 services:
   - redis-server
+
+notifications:
+  slack: interonet:mQRWJzCvZU5J4UswbzERMQJv

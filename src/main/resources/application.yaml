@@ -19,7 +19,7 @@ spring:
 
 
   datasource:
-    url: jdbc:mysql://ants.xjtu.edu.cn:23306/test
+    url: jdbc:mysql://mercury.shuolingdeng.com:23306/test
     username: test
     password: siW-!8#X
     driver-class-name: com.mysql.jdbc.Driver
@@ -27,12 +27,12 @@ spring:
   redis:
     user:
       database: 0
-      host: ants.xjtu.edu.cn
+      host: mercury.shuolingdeng.com
       port: 26379
       password: siW-!8#X
     token:
       database: 1
-      host: ants.xjtu.edu.cn
+      host: mercury.shuolingdeng.com
       port: 26379
       password: siW-!8#X
 

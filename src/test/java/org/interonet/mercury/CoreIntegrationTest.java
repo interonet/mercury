@@ -38,28 +38,28 @@ public class CoreIntegrationTest {
         header.add("Authorization", token.getToken());
 
         ExportSubmitSlice slice = new ExportSubmitSlice();
-        slice.setBeginTime(ZonedDateTime.now().plusSeconds(3));
-        slice.setEndTime(ZonedDateTime.now().plusSeconds(6));
+        slice.setBeginTime(ZonedDateTime.now().plusSeconds(5));
+        slice.setEndTime(ZonedDateTime.now().plusSeconds(10));
 
         HttpEntity<ExportSubmitSlice> request = new HttpEntity<>(slice, header);
         HttpEntity<ExportSlice> httpEntity = restTemplate.postForEntity("/core/slice_pool", request, ExportSlice.class);
         ExportSlice exportSlice = httpEntity.getBody();
 
-        MercuryTimer mercuryTimer = new MercuryTimer(10);
-        mercuryTimer.addListener(1, () -> {
+        MercuryTimer mercuryTimer = new MercuryTimer(20);
+        mercuryTimer.addListener(3, () -> {
             ExportSlice timeWaitingExportSlice = getSliceById(exportSlice.getId(), header);
             assertNotNull(timeWaitingExportSlice);
 //            assertEquals(timeWaitingExportSlice.getStatus(), Slice.SliceStatus.TIME_WAITING);
         });
 
-        mercuryTimer.addListener(5, () -> {
+        mercuryTimer.addListener(7, () -> {
             ExportSlice runningExportSlice = getSliceById(exportSlice.getId(), header);
             assertNotNull(runningExportSlice);
 //            assertEquals(runningExportSlice.getStatus(), Slice.SliceStatus.RUNNING);
 
         });
 
-        mercuryTimer.addListener(9, () -> {
+        mercuryTimer.addListener(15, () -> {
             ExportSlice terminatedExportSlice = getSliceById(exportSlice.getId(), header);
             assertNotNull(terminatedExportSlice);
 //            assertEquals(terminatedExportSlice.getStatus(), Slice.SliceStatus.TERMINATED);
